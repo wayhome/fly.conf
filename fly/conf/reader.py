@@ -34,10 +34,9 @@ class ConfReader(object):
         key = self.get_key(key)
         return dict(self.client.zrange(key, 0, -1, withscores=True))
 
-    def add(self, key, value):
-        key = self.get_key(key)
-        self.client.zadd(key, value, time.time())
-
-    def remove(self, key, value):
-        key = self.get_key(key)
-        self.client.zrem(key, value)
+    def get_all_keys(self):
+        if self.prefix:
+            key = "{0}:*".format(self.prefix)
+        else:
+            key = "*"
+        return self.client.keys(key)
