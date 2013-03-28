@@ -3,10 +3,13 @@
 import time
 from redis import Redis
 
-CACHE_TIME = 60
+CACHE_TIME = 120  # 2分钟后自动重新读取配置
+
 
 class ConfReader(object):
     """a redis config reader"""
+    _results = {}
+
     def __init__(self, url, prefix=None):
         self.client = Redis.from_url(url)
         self.prefix = prefix
@@ -19,7 +22,13 @@ class ConfReader(object):
 
     def get(self, key):
         key = self.get_key(key)
-        return self.client.zrange(key, 0, -1)
+        if key in ConfReader._results:
+            result = ConfReader._results[key]
+            if time.time() - result['updated'] < CACHE_TIME:
+                return result['value']
+        value = self.client.zrange(key, 0, -1)
+        ConfReader._results[key] = {'value': value, 'updated': time.time()}
+        return value
 
     def get_full(self, key):
         key = self.get_key(key)
