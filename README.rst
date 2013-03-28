@@ -25,8 +25,8 @@ flyconf
 ----------------
 提供给管理方使用
 
-
->>> writer = ConfReader('redis://127.0.0.1:6379/0', 'main')
+>>> from fly.conf import ConfWriter
+>>> writer = ConfWriter('redis://127.0.0.1:6379/0', 'main')
 >>> writer.delete('cache_servers')
 >>> writer.add('cache_servers', 'redis://127.0.0.1/6389/0')
 >>> writer.add('cache_servers', 'redis://127.0.0.1/6389/2')
