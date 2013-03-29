@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import json
 import time
 from redis import Redis
 
@@ -18,6 +19,8 @@ class ConfWriter(object):
 
     def add(self, key, value):
         key = self.get_key(key)
+        if not isinstance(value, basestring):
+            value = json.dumps(value)
         self.client.zadd(key, value, time.time())
 
     def remove(self, key, value):
